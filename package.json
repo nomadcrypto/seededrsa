@@ -1,0 +1,20 @@
+{
+  "name": "seededrsa",
+  "version": "0.0.1",
+  "description": "This is a simple lib that takes a bip39 seed phrase and generates a rsa key from it. This is useful in certain situations where you need to be able to restore a rsa key. It also contains a seeded random number generator that should pass all uniformity tests.",
+  "main": "rsa.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rsa",
+    "seeded",
+    "bip39"
+  ],
+  "author": "nomadcrypto@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "bip39": "^2.5.0",
+    "jsrsasign": "^8.0.12"
+  }
+}
