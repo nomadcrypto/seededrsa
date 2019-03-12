@@ -62,7 +62,7 @@ class RNG {
     }
 
     nextBytes(array) {
-        let arr = new Uint8Array(array.length / 2)
+        let arr = new Uint8Array(array.length)
         this.randomValues(arr);
         let bytes = Array.from(arr, this.dec2hex).join("");
         for(var i = 0; i < array.length; ++i) {
