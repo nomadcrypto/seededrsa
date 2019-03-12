@@ -7,12 +7,9 @@ var util = require('util');
 var Readable = stream.Readable;
 
 function RandomStream(options) {
-  // allow calling with or without new
   if (!(this instanceof RandomStream)) {
     return new RandomStream(options);
   }
-
-  // init Readable
   Readable.call(this, options);
 
   this.seed = "praise you muffin lion enable neck grocery crumble super myself license ghost"
@@ -23,13 +20,9 @@ function RandomStream(options) {
 util.inherits(RandomStream, Readable);
 
 RandomStream.prototype._read = function (size) {
-	size= size||8
   var ready = true;
-  while (ready) { // only cont while push returns true
+  while (ready) { 
     var bytes = this.rng.randomBytes(8)
-    //ready = this.push(this.bytes.toString("binary") + "\n")
-    
-    //read = false;
     //bytes = crypto.randomBytes(8)
     ready = this.push(bytes)
   }
@@ -37,4 +30,4 @@ RandomStream.prototype._read = function (size) {
 };
 
 var readstream = new RandomStream();
-readstream.pipe(process.stdout)
+readstream.pipe(process.stdout)s
