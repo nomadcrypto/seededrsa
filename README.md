@@ -7,6 +7,11 @@ The rng was basically the product of this comment on stackoverflow regarding see
 
 My goal here was to use existing implementations for both rsa and the rng to minimize the risk of me causing a dumbster fire of a situation. I still wouldn't trust this until it has been properly tested for randomness.
 
+## Install
+```bash
+npm install seededrsa
+```
+
 ## Example usage
 ```javascript
 const RSA = require("seededrsa");
