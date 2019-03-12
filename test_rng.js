@@ -30,4 +30,4 @@ RandomStream.prototype._read = function (size) {
 };
 
 var readstream = new RandomStream();
-readstream.pipe(process.stdout)s
+readstream.pipe(process.stdout)
