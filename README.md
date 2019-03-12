@@ -1,9 +1,9 @@
 # SeededRSA
 The inspiration for this came from a project I was doing research for. In this project I was wanting to use ipfs in combination with orbitdb for a dapp(decentralized application). IPFS uses 2048 bit rsa keys for the peerid and orbitdb uses secp256k1 for read/write access in the db. In the cryptocurrency community we are used to using bip39 seed phrases to make backing up or restoring a bitcoin(or other cryptocurrency) wallet much easier. For my application I wanted an easy way for a user to restore their peerid and secp256k1 keys on another device while avoiding unnecessary overhead(like storing encrypted keys that were previously generated). Instead with this a user can simply restore their RSA key using a bip39 phrase when/if needed.
 
-Most of rsa.js was taken from jsencrypt/cryptico which has been in the wild for years. I did research and wasn't able to find any security complaints regarding their implementation of the rsa keys. 
+Most of rsa.js was taken from [https://github.com/travist/jsencrypt/blob/master/src/JSEncryptRSAKey.ts](jsencrypt)/[https://github.com/wwwtyro/cryptico/blob/master/rsa.js](cryptico) which has been in the wild for years. I did research and wasn't able to find any security complaints regarding their implementation of the rsa keys so I felt safe in using that implementation.
 
-The rng was basically the product of this comment on stackoverflow regarding seeded random generators https://stackoverflow.com/a/47593316/4425082. It uses MurmurHash3's hashing function as a seed for the scf32 prng from pactrand. 
+The rng was basically the product of [https://stackoverflow.com/a/47593316/4425082](this comment on stackoverflow) regarding seeded random generators. It uses MurmurHash3's hashing function as a seed for the scf32 prng from pactrand. Right now it only tests for 8 bit but can be tested for any size that practrand supports. It seems to be secure if it starts with a valid bip39 seed. I have not tested it without one. I will most likely move the RNG into a its own package
 
 My goal here was to use existing implementations for both rsa and the rng to minimize the risk of me causing a dumbster fire of a situation. I still wouldn't trust this until it has been properly tested for randomness.
 
@@ -21,31 +21,31 @@ key.generate(2048)
 console.log(key.privateKey())
 /*
 -----BEGIN RSA PRIVATE KEY-----
-MIIEowIBAAKCAQEAgxtjKdnBWVDahMthfkPnfEhJOZooxcHXqC2BNITy9RPWXkEL
-YFjOtNv7UoTrbbUINOPVtitB1cHK9C1B+O+BG4Estpd5GNLcXdND37SBA4EM4t7/
-NOUuAmyRHnCqls+AZxNUTDp/Pj/3JM2CDeKVu67pff7x3dq2tsGPJsbBmre25AMq
-bE9P8py80wUlc3c39P170pPKCcn8SNePot1L+jsxo+KmtOtqQpwTdgvaNzdHiHqT
-pxafFoTZ+/EWWTFp9mOArEpXTmxY30YTk+U7lF8D4iTYAZyxjNCqjKkjBMVWruOj
-sJzVLtU+9eyHXbYeK9dryEtbW6Bgwj21isvJSwIDBlU3AoIBABhgTVDUfSQ8sWb6
-jyT9QsCRiS08VqQg03jVsv3WfPNT7ARTVcfjVeoUlp8jkeM9ZK9Om04lNp217im/
-SHKwjkSoe7dgZ/E4fGgj2IbvLftyh5RPlYs/p+B5M8VSwoeG4ZMYAcRTZQKh5hss
-c2x7B0etbln+v3CONC4H0ZO+YBOxgUtfjn5n/Z1rU0ekVksfxnO+2Gpz0bg/lWp5
-qVk2Um9RlryQkMbpsSNgqKsWfUWXMSRgZbuJQduc1crDf8dKn0+JwWwFSxOvI/5F
-u+YMReEX4HCLnzvAn13VZnAJS5iIAYiaTjlV7sFm7D1gx0ZlZYx8+nouAVNlAMO7
-CB86pacCgYEAuDMxMDUyMTIyMzQ3NDEwNDQ1ODgyMTc5NzMxNDMxMTA5NDE0NjM0
-OTE3NjEyMTMxOTYyMTI0NDE4MzE1MTg3MTM1NTcyMTIzOTI1MTE3NDI3MjMzMTU3
-MTM1MTE1MTEwNzAxMDIyMDIxMDYxMzkxMTU1MTA2NTg0MDEzMjExM3sCgYEAtjYx
-MTQxNDExMTExMDcxOTQyMjQyMjUyMzkzODI0NzExNzE4MTEzMjcxNDQxNDcyNDYx
-Njc4MDE1MDI0ODI1MTEzOTcyMzEyMDAxMDE1MjE4OTY5NDUzMTAyMjQ4ODY0NDE0
-ODI0NzE5MTQwNTUyMjg5NjM5MzY2NTI0ODE3MHECgYB3wP5Fdu8eCLhFXanMGxxe
-uxSEqwOeOEfumUT1l8TEBrNq+Fs4TzwrMzk4CWX2eHgl3HdwHF2gGhjq5znaSiew
-GFIY3ggL0PXkn+qfrzE3pF6WuDWRTqD7arrW18xNAv8IHze35nDHpuP+WApeOvFK
-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
+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
 -----END RSA PRIVATE KEY-----
 
 */
@@ -53,16 +53,80 @@ lB+BiAcWXUKoNNJvy0cNTRoxwVFf7cgHCSqkg9evIAE6miCZxNfw
 console.log(key.publicKey())
 /*
 -----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgxtjKdnBWVDahMthfkPn
-fEhJOZooxcHXqC2BNITy9RPWXkELYFjOtNv7UoTrbbUINOPVtitB1cHK9C1B+O+B
-G4Estpd5GNLcXdND37SBA4EM4t7/NOUuAmyRHnCqls+AZxNUTDp/Pj/3JM2CDeKV
-u67pff7x3dq2tsGPJsbBmre25AMqbE9P8py80wUlc3c39P170pPKCcn8SNePot1L
-+jsxo+KmtOtqQpwTdgvaNzdHiHqTpxafFoTZ+/EWWTFp9mOArEpXTmxY30YTk+U7
-lF8D4iTYAZyxjNCqjKkjBMVWruOjsJzVLtU+9eyHXbYeK9dryEtbW6Bgwj21isvJ
-SwIDBlU3
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3NdzUHz53SeYrpoR1JXt
+x/IokPeMhMcNEp3HtB7DW3rTRImgSlxPv2doHSbYOZ1eEGexmAeJ7ClySm8Icj1v
+getNq1mNTfi07LXHO0lQvburYOcXq1yk+OshdurWfoIa7tsiiregYF1cjGh9kdjU
+aI+x59OUW+s1pWS9sfhnDwaK/lyQTG6vCSiyXX3tktc0Sso+8xOMg41jX0OZayKW
+Nc63K0CHtUlVvTNqQ3x7W1YM1wyHrzOm8MqRF1behCva73F9M8f1+zo9aqmASSgx
+s7wGQyozit/F/I4gDKEnrW2+1b+zOKwQP+lKypSEeanmkZj3H1k95R2uctoOkuBg
+jQIDBlU3
 -----END PUBLIC KEY-----
 
 */
+
+
+```
+
+## Verifying the generated RSA Keys
+
+I save they private and public keys from above to say key.pem(private) and key.pub. Then you can use openssl to verify them like this:
+
+```
+openssl rsa -in key.pem -check
+RSA key ok
+writing RSA key
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEA3NdzUHz53SeYrpoR1JXtx/IokPeMhMcNEp3HtB7DW3rTRImg
+SlxPv2doHSbYOZ1eEGexmAeJ7ClySm8Icj1vgetNq1mNTfi07LXHO0lQvburYOcX
+q1yk+OshdurWfoIa7tsiiregYF1cjGh9kdjUaI+x59OUW+s1pWS9sfhnDwaK/lyQ
+TG6vCSiyXX3tktc0Sso+8xOMg41jX0OZayKWNc63K0CHtUlVvTNqQ3x7W1YM1wyH
+rzOm8MqRF1behCva73F9M8f1+zo9aqmASSgxs7wGQyozit/F/I4gDKEnrW2+1b+z
+OKwQP+lKypSEeanmkZj3H1k95R2uctoOkuBgjQIDBlU3AoIBAEoVNIls76hBbflj
+r8XsrxO/jBtJIp0vsRHFWbE0QHgl8VNS7fhV/PzgxR/cCJLRG/Ny5j4mnT0gNhxy
+u62WAfPyEtLe+cwewmc73EdudPkDEBkCCwAHEYT7wuoBNN5UPm4916+kdKDQpcNN
+LYk9mdZF3W/2j7kREKlAhAKsUz+yTA864w4iKKbVHnVAKSBMacfQI9FJ4rS/DwtE
+SaE2IH4XO/CBm3jhnQ8kG0RHOssfVReWcnArdigmm4xJ8qGfE+BDzkLbvDbCRh3g
+KIG1Tkr4tat5Q0eSkYJqV5fJ1igc97ARlBk3mBJ+aFHzV9Yn9eLWyeKonYHCtxDc
+nuShjycCgYEA8o1va8Lg4e8m93UScRuQkwIup1CW+BlxYefIZTS9RQQ1CuBYQASU
+9xOMN+RgJyRB+Kr7ACGmfpw9ASV7NNUF88aaUbx5HbEqXd18+5XEa4nbTqqjtCOH
+rbSLYMTVClB1hTWqg2xwzbAcJ/rQeqlE9piVwV4MaOhIn9XgD0OBbrkCgYEA6RXf
+BEpoLVjZYR8rbl6SIltMDINgFfS3D7uHOdQn+64b6Z2Hc25GZspqiwGbajoohHF2
+pPGcqTOd+13rs6n40oAmHvO+8ygkipOtFKvR3blt27QlVZT6rtO34L38SJ+YvzVi
+LgEMA/EQoaqWzWlH4O1/MTx3XlwZJdeJNRlr9nUCgYB8TtPcnLZHlLytM1Av8HWr
+ZXAvscradmTPcWxg362lZtiamZqyfR8f7IjlJMe+Qz3BDfl7amVFxHA8chuSqm5F
+n7ZAUeB089yrzAk1yWJkijEGkBYuGIMDWis9GLCK1QwOUcys4GcflUyxTOXst3qm
+VY/h6RLOjYVadxycHSgkfwKBgBVT43uKpu5+7avz6aQDiKTVtBsc991UkMkHNOuO
+R8Yr1wdWMl6D4525y+zCsy4CuYmnpcGz15GB7vgmH1ORnrc3SaCj72lNaTnP7OpK
+36xXZU59/s5XrwfW6MVFcR0fbGdngF/7i86gqeyF+20Pe+GKXtOX1bP8Niu6OyDf
+w9enAoGAU1rF0ty3hi6uJgG/4UPyZBeKlYJA1xqgXJrsSbD4UE3yMpn+MPGEZCr3
+NfwNbc03UcrJoLva8mbspVz73udtR4SiecwD7o44S23+zn63w4NdEEQ8+KF2J1wT
+XJqOG8nR/SfQHt/TH3ErQK4OfqEw/wExadhSZgCIUlpuULmi2MQ=
+-----END RSA PRIVATE KEY-----
+```
+
+```
+openssl rsa -inform PEM -pubin -in key.pub -text -noout
+Public-Key: (2048 bit)
+Modulus:
+    00:dc:d7:73:50:7c:f9:dd:27:98:ae:9a:11:d4:95:
+    ed:c7:f2:28:90:f7:8c:84:c7:0d:12:9d:c7:b4:1e:
+    c3:5b:7a:d3:44:89:a0:4a:5c:4f:bf:67:68:1d:26:
+    d8:39:9d:5e:10:67:b1:98:07:89:ec:29:72:4a:6f:
+    08:72:3d:6f:81:eb:4d:ab:59:8d:4d:f8:b4:ec:b5:
+    c7:3b:49:50:bd:bb:ab:60:e7:17:ab:5c:a4:f8:eb:
+    21:76:ea:d6:7e:82:1a:ee:db:22:8a:b7:a0:60:5d:
+    5c:8c:68:7d:91:d8:d4:68:8f:b1:e7:d3:94:5b:eb:
+    35:a5:64:bd:b1:f8:67:0f:06:8a:fe:5c:90:4c:6e:
+    af:09:28:b2:5d:7d:ed:92:d7:34:4a:ca:3e:f3:13:
+    8c:83:8d:63:5f:43:99:6b:22:96:35:ce:b7:2b:40:
+    87:b5:49:55:bd:33:6a:43:7c:7b:5b:56:0c:d7:0c:
+    87:af:33:a6:f0:ca:91:17:56:de:84:2b:da:ef:71:
+    7d:33:c7:f5:fb:3a:3d:6a:a9:80:49:28:31:b3:bc:
+    06:43:2a:33:8a:df:c5:fc:8e:20:0c:a1:27:ad:6d:
+    be:d5:bf:b3:38:ac:10:3f:e9:4a:ca:94:84:79:a9:
+    e6:91:98:f7:1f:59:3d:e5:1d:ae:72:da:0e:92:e0:
+    60:8d
+Exponent: 415031 (0x65537)
 ```
 
 ## Testing the RNG
