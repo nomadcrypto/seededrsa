@@ -57,17 +57,12 @@ class RNG {
 
     randomValues(array) {
         for(var i=0;i<array.length;i++) {
-            array[i] = this.randomRange(0, 255);
+            array[i] = this.randomRange(0, 256);
         }
     }
 
     nextBytes(array) {
-        let arr = new Uint8Array(array.length)
-        this.randomValues(arr);
-        let bytes = Array.from(arr, this.dec2hex).join("");
-        for(var i = 0; i < array.length; ++i) {
-            array[i] = bytes.charCodeAt(i);
-        }
+        this.randomValues(array);
 
 
     }

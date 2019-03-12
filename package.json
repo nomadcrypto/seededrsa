@@ -16,7 +16,10 @@
   "license": "MIT",
   "dependencies": {
     "bip39": "^2.5.0",
-    "jsrsasign": "^8.0.12"
+    "jsrsasign": "^8.0.12",
+    "libp2p-crypto": "^0.16.1",
+    "peer-id": "^0.12.2",
+    "pem-jwk": "^2.0.0"
   },
   "repository": {
     "type": "git",
