@@ -64,3 +64,57 @@ SwIDBlU3
 
 */
 ```
+
+## Testing the RNG
+I used [practrand](http://pracrand.sourceforge.net/) to test and will probably test with dieharder as well in the future. To run the test with practrand you will need a working installation first. The build process works on linux, mac and windows. 
+
+
+```bash
+node test_rng.js |/path/to/practrand/RNG_test stdin8
+```
+
+sample output:
+```
+RNG_test using PractRand version 0.93
+RNG = RNG_stdin8, seed = 0x3bb19275
+test set = normal, folding = standard (8 bit)
+
+rng=RNG_stdin8, seed=0x3bb19275
+length= 4 megabytes (2^22 bytes), time= 2.3 seconds 
+  no anomalies in 56 test result(s)
+
+rng=RNG_stdin8, seed=0x3bb19275
+length= 8 megabytes (2^23 bytes), time= 5.0 seconds 
+  no anomalies in 60 test result(s)
+
+rng=RNG_stdin8, seed=0x3bb19275
+length= 16 megabytes (2^24 bytes), time= 9.9 seconds
+  no anomalies in 66 test result(s)
+
+rng=RNG_stdin8, seed=0x3bb19275
+length= 32 megabytes (2^25 bytes), time= 19.1 seconds
+  no anomalies in 72 test result(s)
+
+rng=RNG_stdin8, seed=0x3bb19275
+length= 64 megabytes (2^26 bytes), time= 38.2 seconds
+  no anomalies in 76 test result(s)
+
+rng=RNG_stdin8, seed=0x3bb19275
+length= 128 megabytes (2^27 bytes), time= 76.0 seconds
+  no anomalies in 82 test result(s)
+
+rng=RNG_stdin8, seed=0x3bb19275
+length= 256 megabytes (2^28 bytes), time= 147 seconds
+  no anomalies in 88 test result(s)
+
+rng=RNG_stdin8, seed=0x3bb19275
+length= 512 megabytes (2^29 bytes), time= 289 seconds
+  no anomalies in 92 test result(s)
+
+rng=RNG_stdin8, seed=0x3bb19275
+length= 1 gigabyte (2^30 bytes), time= 571 seconds
+  no anomalies in 98 test result(s)
+
+```
+
+From what I've read this test needs to run while before you can say it is safe. Even then there is evidence to suggest that passing those tests doesn't mean a RNG is cryptographically secure.
