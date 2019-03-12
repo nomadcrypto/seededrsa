@@ -57,12 +57,19 @@ class RNG {
 
     randomValues(array) {
         for(var i=0;i<array.length;i++) {
-            array[i] = this.randomRange(0, 256);
+            array[i] = this.randomRange(0, 255);
         }
+        return array
+    }
+
+    randomBytes(size) {
+        var buffer = Buffer.allocUnsafe(size);
+        buffer = this.randomValues(buffer)
+        return buffer;
     }
 
     nextBytes(array) {
-        this.randomValues(array);
+        return this.randomValues(array);
 
 
     }
