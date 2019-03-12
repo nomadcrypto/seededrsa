@@ -1,9 +1,9 @@
 # SeededRSA
 The inspiration for this came from a project I was doing research for. In this project I was wanting to use ipfs in combination with orbitdb for a dapp(decentralized application). IPFS uses 2048 bit rsa keys for the peerid and orbitdb uses secp256k1 for read/write access in the db. In the cryptocurrency community we are used to using bip39 seed phrases to make backing up or restoring a bitcoin(or other cryptocurrency) wallet much easier. For my application I wanted an easy way for a user to restore their peerid and secp256k1 keys on another device while avoiding unnecessary overhead(like storing encrypted keys that were previously generated). Instead with this a user can simply restore their RSA key using a bip39 phrase when/if needed.
 
-Most of rsa.js was taken from [https://github.com/travist/jsencrypt/blob/master/src/JSEncryptRSAKey.ts](jsencrypt)/[https://github.com/wwwtyro/cryptico/blob/master/rsa.js](cryptico) which has been in the wild for years. I did research and wasn't able to find any security complaints regarding their implementation of the rsa keys so I felt safe in using that implementation.
+Most of rsa.js was taken from [jsencrypt](https://github.com/travist/jsencrypt/blob/master/src/JSEncryptRSAKey.ts)/[cryptico](https://github.com/wwwtyro/cryptico/blob/master/rsa.js) which has been in the wild for years. I did research and wasn't able to find any security complaints regarding their implementation of the rsa keys so I felt safe in using that implementation.
 
-The rng was basically the product of [https://stackoverflow.com/a/47593316/4425082](this comment on stackoverflow) regarding seeded random generators. It uses MurmurHash3's hashing function as a seed for the scf32 prng from pactrand. Right now it only tests for 8 bit but can be tested for any size that practrand supports. It seems to be secure if it starts with a valid bip39 seed. I have not tested it without one. I will most likely move the RNG into a its own package
+The rng was basically the product of [this comment on stackoverflow](https://stackoverflow.com/a/47593316/4425082) regarding seeded random generators. It uses MurmurHash3's hashing function as a seed for the scf32 prng from pactrand. Right now it only tests for 8 bit but can be tested for any size that practrand supports. It seems to be secure if it starts with a valid bip39 seed. I have not tested it without one. I will most likely move the RNG into a its own package
 
 My goal here was to use existing implementations for both rsa and the rng to minimize the risk of me causing a dumbster fire of a situation. I still wouldn't trust this until it has been properly tested for randomness.
 
@@ -69,7 +69,7 @@ jQIDBlU3
 
 ## Verifying the generated RSA Keys
 
-I save they private and public keys from above to say key.pem(private) and key.pub. Then you can use openssl to verify them like this:
+I save the private and public keys from above to say key.pem(private) and key.pub(public). Then you can use openssl to verify them like this:
 
 ```
 openssl rsa -in key.pem -check
@@ -128,6 +128,8 @@ Modulus:
     60:8d
 Exponent: 415031 (0x65537)
 ```
+
+The keys generated are fully functional RSA keys.
 
 ## Testing the RNG
 I used [practrand](http://pracrand.sourceforge.net/) to test and will probably test with dieharder as well in the future. To run the test with practrand you will need a working installation first. The build process works on linux, mac and windows. 
