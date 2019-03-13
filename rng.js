@@ -1,11 +1,13 @@
 const bip39 = require("bip39");
+const sha256 = require('js-sha256');
 
 class RNG {
     constructor(seed) {
-        if(!bip39.validateMnemonic(seed)) {
-            throw new Error("Invalid Mnemonic phrase!");
+        if(bip39.validateMnemonic(seed)) {
+            seed = bip39.mnemonicToSeedHex(seed);
+        } else {
+            seed = sha256(seed);
         }
-        seed = bip39.mnemonicToSeedHex(seed);
         this.seed = seed;
         this.rng = this.sfc32();
     }

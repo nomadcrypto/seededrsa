@@ -12,7 +12,7 @@ function RandomStream(options) {
   }
   Readable.call(this, options);
 
-  this.seed = "praise you muffin lion enable neck grocery crumble super myself license ghost"
+  this.seed = "password"
   this.rng = new RNG(this.seed)
   this.bytes = Buffer.allocUnsafe(8);
   
