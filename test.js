@@ -1,8 +1,13 @@
-const RSA = require("seededrsa");
+const RSA = require("./rsa");
 const seed = "praise you muffin lion enable neck grocery crumble super myself license ghost"
 const key = new RSA(seed);
-key.generate(2048)
-console.log(key.privateKey())
+key.generateNew(2048).then(function(key) {
+	console.log(key.privateKey)
+	console.log(key.publicKey)
+}).catch(function(error){
+	console.error(error)
+})
+
 /*
 -----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEA3NdzUHz53SeYrpoR1JXtx/IokPeMhMcNEp3HtB7DW3rTRImg
@@ -32,10 +37,6 @@ NfwNbc03UcrJoLva8mbspVz73udtR4SiecwD7o44S23+zn63w4NdEEQ8+KF2J1wT
 XJqOG8nR/SfQHt/TH3ErQK4OfqEw/wExadhSZgCIUlpuULmi2MQ=
 -----END RSA PRIVATE KEY-----
 
-*/
-
-console.log(key.publicKey())
-/*
 -----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3NdzUHz53SeYrpoR1JXt
 x/IokPeMhMcNEp3HtB7DW3rTRImgSlxPv2doHSbYOZ1eEGexmAeJ7ClySm8Icj1v
@@ -45,3 +46,4 @@ Nc63K0CHtUlVvTNqQ3x7W1YM1wyHrzOm8MqRF1behCva73F9M8f1+zo9aqmASSgx
 s7wGQyozit/F/I4gDKEnrW2+1b+zOKwQP+lKypSEeanmkZj3H1k95R2uctoOkuBg
 jQIDBlU3
 -----END PUBLIC KEY-----
+*/

@@ -17,11 +17,11 @@
   "dependencies": {
     "bip39": "^2.5.0",
     "js-sha256": "^0.9.0",
+    "jsbn": "^1.1.0",
     "jsrsasign": "^8.0.12",
     "libp2p-crypto": "^0.16.1",
     "peer-id": "^0.12.2",
-    "pem-jwk": "^2.0.0"
-  },
+    "pem-jwk": "^2.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/nomadcrypto/seededrsa.git"

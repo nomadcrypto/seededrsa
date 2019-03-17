@@ -7,9 +7,6 @@ The rng was basically the product of [this comment on stackoverflow](https://sta
 
 My goal here was to use existing implementations for both rsa and the rng to minimize the risk of me causing a dumbster fire of a situation. I still wouldn't trust this until it has been properly tested for randomness.
 
-## Develop branch
-The develop branch is where I will be switching from BigInteger.js to BN.js. There are several reasons for this. One being that BN.js is an activate project whereas BigInteger.js is not or at least the implementation in this repo is a copy of a copy of a copy. This is obviously not trustworthy for most real world use cases. 
-
 
 ## Install
 ```bash
@@ -18,11 +15,16 @@ npm install seededrsa
 
 ## Example usage
 ```javascript
-const RSA = require("seededrsa");
+const RSA = require("./rsa");
 const seed = "praise you muffin lion enable neck grocery crumble super myself license ghost"
 const key = new RSA(seed);
-key.generate(2048)
-console.log(key.privateKey())
+key.generateNew(2048).then(function(key) {
+  console.log(key.privateKey)
+  console.log(key.publicKey)
+}).catch(function(error){
+  console.error(error)
+})
+
 /*
 -----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEA3NdzUHz53SeYrpoR1JXtx/IokPeMhMcNEp3HtB7DW3rTRImg
@@ -52,10 +54,6 @@ NfwNbc03UcrJoLva8mbspVz73udtR4SiecwD7o44S23+zn63w4NdEEQ8+KF2J1wT
 XJqOG8nR/SfQHt/TH3ErQK4OfqEw/wExadhSZgCIUlpuULmi2MQ=
 -----END RSA PRIVATE KEY-----
 
-*/
-
-console.log(key.publicKey())
-/*
 -----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3NdzUHz53SeYrpoR1JXt
 x/IokPeMhMcNEp3HtB7DW3rTRImgSlxPv2doHSbYOZ1eEGexmAeJ7ClySm8Icj1v
@@ -65,7 +63,6 @@ Nc63K0CHtUlVvTNqQ3x7W1YM1wyHrzOm8MqRF1behCva73F9M8f1+zo9aqmASSgx
 s7wGQyozit/F/I4gDKEnrW2+1b+zOKwQP+lKypSEeanmkZj3H1k95R2uctoOkuBg
 jQIDBlU3
 -----END PUBLIC KEY-----
-
 */
 
 

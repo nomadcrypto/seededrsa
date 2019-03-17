@@ -72,8 +72,6 @@ class RNG {
 
     nextBytes(array) {
         return this.randomValues(array);
-
-
     }
 }
 

@@ -1,9 +1,9 @@
-const BigInteger = require("./BigInteger");
 const RNG = require("./rng");
-const jsrsasign = require("jsrsasign");
 const asn1 = require("jsrsasign").asn1;
+const BigInteger = require('jsbn').BigInteger;
 
 class RSAKey {
+
     constructor(seed) {
         this.n = null;
         this.e = 0;
@@ -14,99 +14,201 @@ class RSAKey {
         this.dmq1 = null;
         this.coeff = null;
         this.seed = seed;
+        this.rng = new RNG(seed);
     }
 
-    generate(B, E) {
-        E = E || "65537"
-        var rng = new RNG(this.seed);
-        var qs = B >> 1;
-        this.e = parseInt(E, 16);
-        var ee = new BigInteger(E, 16);
-        for (;;)
-        {
-            for (;;)
-            {
-                this.p = new BigInteger(B - qs, 1, rng);
-                if (this.p.subtract(BigInteger.ONE).gcd(ee).compareTo(BigInteger.ONE) == 0 && this.p.isProbablePrime(10)) break;
+
+    async _getRandomBN(length) {
+        const self = this;
+        return new Promise(function(resolve, reject) {
+            try {
+                let num = new BigInteger(length, 1, self.rng)
+                resolve(num)
+            } catch(e) {
+                reject(e)
             }
-            for (;;)
-            {
-                this.q = new BigInteger(qs, 1, rng);
-                if (this.q.subtract(BigInteger.ONE).gcd(ee).compareTo(BigInteger.ONE) == 0 && this.q.isProbablePrime(10)) break;
+        })
+
+
+    }
+
+    async _isValid(num, exponent) {
+        return new Promise(function(resolve, reject) {
+            try {
+                resolve(num.subtract(BigInteger.ONE).gcd(exponent).compareTo(BigInteger.ONE) == 0 && num.isProbablePrime(10))
+
+            } catch(e) {
+                reject(e)
             }
-            if (this.p.compareTo(this.q) <= 0)
-            {
-                var t = this.p;
-                this.p = this.q;
-                this.q = t;
+        })
+    }
+
+    async _getPrime(length,exponent) {
+        const self = this;
+        return new Promise(async function(resolve, reject) {
+            try {
+                let valid = false;
+                let num;
+                while(!valid) {
+                    num = await self._getRandomBN(length, exponent)
+                    valid = await self._isValid(num, exponent)
+                }
+                resolve(num);
+
+
+            } catch(e) {
+                reject(e)
             }
-            var p1 = this.p.subtract(BigInteger.ONE);
-            var q1 = this.q.subtract(BigInteger.ONE);
-            var phi = p1.multiply(q1);
-            if (phi.gcd(ee).compareTo(BigInteger.ONE) == 0)
-            {
-                this.n = this.p.multiply(this.q);
-                this.d = ee.modInverse(phi);
-                this.dmp1 = this.d.mod(p1);
-                this.dmq1 = this.d.mod(q1);
-                this.coeff = this.q.modInverse(this.p);
-                break;
+        })
+                
+    }
+
+
+    async generateNew(B, E) {
+
+        const self = this;
+        return new Promise(async function(resolve, reject) {
+
+            try {
+                //key size
+                B = B || 2048
+                //exponent
+                E = E || "65537"
+                const qs = B >> 1
+                self.e = parseInt(E, 16)
+                const exponent = new BigInteger(E, 16);
+
+                let valid = false;
+
+                while(!valid) {
+                    self.p = await self._getPrime(B-qs, exponent)
+                    self.q = await self._getPrime(qs, exponent)
+                    
+                    if(self.p.compareTo(self.q) <= 0) {
+                        //swap values
+                        let t = self.p
+                        self.p = self.q
+                        self.q = t
+                    }
+
+                    let p1 = self.p.subtract(BigInteger.ONE);
+                    let q1 = self.q.subtract(BigInteger.ONE);
+                    let phi = p1.multiply(q1);
+
+                    if(phi.gcd(exponent).compareTo(BigInteger.ONE) == 0) {
+                        self.n = self.p.multiply(self.q);
+                        self.d = exponent.modInverse(phi);
+                        self.dmp1 = self.d.mod(p1);
+                        self.dmq1 = self.d.mod(q1);
+                        self.coeff = self.q.modInverse(self.p);
+                        valid = true;
+                    }
+                }
+
+                let key = {}
+                key.privateKey = await self.privateKey();
+                key.publicKey = await self.publicKey();
+                resolve(key);
+                    
+            } catch(error) {
+                reject(error);
             }
-        }
+                
+        })
+        
+
     }
 
-    privateBaseKey() {
-        const options = {
-            array: [
-                new asn1.DERInteger({int: 0}),
-                new asn1.DERInteger({bigint: this.n}),
-                new asn1.DERInteger({int: this.e}),
-                new asn1.DERInteger({bigint: this.d}),
-                new asn1.DERInteger({bigint: this.p}),
-                new asn1.DERInteger({bigint: this.q}),
-                new asn1.DERInteger({bigint: this.dmp1}),
-                new asn1.DERInteger({bigint: this.dmq1}),
-                new asn1.DERInteger({bigint: this.coeff})
-            ]
-        };
-        const seq = new asn1.DERSequence(options);
-        return seq.getEncodedHex();
+
+    async privateBaseKey() {
+        const self = this
+        return new Promise(async function(resolve, reject) {
+            try {
+                const options = {
+                    array: [
+                        new asn1.DERInteger({int: 0}),
+                        new asn1.DERInteger({bigint: self.n}),
+                        new asn1.DERInteger({int: self.e}),
+                        new asn1.DERInteger({bigint: self.d}),
+                        new asn1.DERInteger({bigint: self.p}),
+                        new asn1.DERInteger({bigint: self.q}),
+                        new asn1.DERInteger({bigint: self.dmp1}),
+                        new asn1.DERInteger({bigint: self.dmq1}),
+                        new asn1.DERInteger({bigint: self.coeff})
+                    ]
+                };
+                const seq = new asn1.DERSequence(options);
+                resolve(seq.getEncodedHex());
+
+            } catch(e) {
+                reject(e);
+            }
+        })
+                
     }
 
-    privateKey() {
-        return asn1.ASN1Util.getPEMStringFromHex(this.privateBaseKey().toString("hex"),'RSA PRIVATE KEY');
+    async privateKey() {
+        const self = this;
+        return new Promise(async function(resolve, reject) {
+            try {
+                let basekey = await self.privateBaseKey()
+                let key = asn1.ASN1Util.getPEMStringFromHex(basekey.toString("hex"),'RSA PRIVATE KEY')
+                resolve(key)
+            } catch(e) {
+                reject(e);
+            }
+        })
+        return 
     }
 
-    publicBaseKey() {
-        const first_sequence = new asn1.DERSequence({
-            array: [
-                new asn1.DERObjectIdentifier({oid: "1.2.840.113549.1.1.1"}), // RSA Encryption pkcs #1 oid
-                new asn1.DERNull()
-            ]
-        });
+    async publicBaseKey() {
+        const self = this;
+        return new Promise(async function(resolve, reject) {
+            try {
+                const first_sequence = new asn1.DERSequence({
+                    array: [
+                        new asn1.DERObjectIdentifier({oid: "1.2.840.113549.1.1.1"}), // RSA Encryption pkcs #1 oid
+                        new asn1.DERNull()
+                    ]
+                });
 
-        const second_sequence = new asn1.DERSequence({
-            array: [
-                new asn1.DERInteger({bigint: this.n}),
-                new asn1.DERInteger({int: this.e})
-            ]
-        });
+                const second_sequence = new asn1.DERSequence({
+                    array: [
+                        new asn1.DERInteger({bigint: self.n}),
+                        new asn1.DERInteger({int: self.e})
+                    ]
+                });
 
-        const bit_string = new asn1.DERBitString({
-            hex: "00" + second_sequence.getEncodedHex()
-        });
+                const bit_string = new asn1.DERBitString({
+                    hex: "00" + second_sequence.getEncodedHex()
+                });
 
-        const seq = new asn1.DERSequence({
-            array: [
-                first_sequence,
-                bit_string
-            ]
-        });
-        return seq.getEncodedHex();
+                const seq = new asn1.DERSequence({
+                    array: [
+                        first_sequence,
+                        bit_string
+                    ]
+                });
+                let basekey = seq.getEncodedHex()
+                resolve(basekey);
+            } catch(e) {
+                reject(e);
+            }
+        })
+                
     }
 
-    publicKey() {
-        return asn1.ASN1Util.getPEMStringFromHex(this.publicBaseKey().toString("hex"),'PUBLIC KEY');
+    async publicKey() {
+        const self = this;
+        return new Promise(async function(resolve, reject) {
+            try {
+                let basekey = await self.publicBaseKey();
+                let key = asn1.ASN1Util.getPEMStringFromHex(basekey.toString("hex"),'PUBLIC KEY')
+                resolve(key)
+            } catch(e) {
+                reject(e);
+            }
+        })
     }
 }
 
