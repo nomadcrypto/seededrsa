@@ -18,7 +18,7 @@ npm install seededrsa
 const RSA = require("./rsa");
 const seed = "praise you muffin lion enable neck grocery crumble super myself license ghost"
 const key = new RSA(seed);
-key.generate(4096).then(function(key) {
+key.generate(2048).then(function(key) {
   console.log(key.privateKey)
   console.log(key.publicKey)
 }).catch(function(error){
