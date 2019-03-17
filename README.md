@@ -7,6 +7,10 @@ The rng was basically the product of [this comment on stackoverflow](https://sta
 
 My goal here was to use existing implementations for both rsa and the rng to minimize the risk of me causing a dumbster fire of a situation. I still wouldn't trust this until it has been properly tested for randomness.
 
+## Develop branch
+The develop branch is where I will be switching from BigInteger.js to BN.js. There are several reasons for this. One being that BN.js is an activate project whereas BigInteger.js is not or at least the implementation in this repo is a copy of a copy of a copy. This is obviously not trustworthy for most real world use cases. 
+
+
 ## Install
 ```bash
 npm install seededrsa
