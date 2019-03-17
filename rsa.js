@@ -64,7 +64,7 @@ class RSAKey {
     }
 
 
-    async generateNew(B, E) {
+    async generate(B, E) {
 
         const self = this;
         return new Promise(async function(resolve, reject) {
